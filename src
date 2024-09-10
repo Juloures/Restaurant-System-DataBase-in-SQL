@@ -1,0 +1,112 @@
+-- 1. Criar o Banco de Dados
+DROP DATABASE IF EXISTS RestauranteDB;
+CREATE DATABASE RestauranteDB;
+
+-- Usar o banco de dados criado
+USE RestauranteDB;
+
+-- 2. Criar as Tabelas
+
+-- Tabela Clientes
+CREATE TABLE Clientes (
+    id_cliente INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    telefone VARCHAR(20),
+    email VARCHAR(100)
+);
+
+-- Tabela Mesas
+CREATE TABLE Mesas (
+    id_mesa INT PRIMARY KEY AUTO_INCREMENT,
+    numero_mesa INT NOT NULL,
+    capacidade INT NOT NULL
+);
+
+-- Tabela Pedidos
+CREATE TABLE Pedidos (
+    id_pedido INT PRIMARY KEY AUTO_INCREMENT,
+    id_cliente INT,
+    id_mesa INT,
+    data_pedido DATETIME NOT NULL,
+    total DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (id_cliente) REFERENCES Clientes(id_cliente) ON DELETE SET NULL,
+    FOREIGN KEY (id_mesa) REFERENCES Mesas(id_mesa) ON DELETE SET NULL
+);
+
+-- Tabela Itens_Pedido
+CREATE TABLE Itens_Pedido (
+    id_item INT PRIMARY KEY AUTO_INCREMENT,
+    id_pedido INT,
+    descricao_item TEXT NOT NULL,
+    quantidade INT NOT NULL,
+    preco_unitario DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (id_pedido) REFERENCES Pedidos(id_pedido) ON DELETE CASCADE
+);
+
+-- 3. Inserir Dados
+
+-- Adicionar Clientes
+INSERT INTO Clientes (nome, telefone, email) VALUES
+('João da Silva', '11987654321', 'joao.silva@example.com'),
+('Maria Oliveira', '11876543210', 'maria.oliveira@example.com'),
+('Pedro Santos', '11765432109', 'pedro.santos@example.com');
+
+-- Adicionar Mesas
+INSERT INTO Mesas (numero_mesa, capacidade) VALUES
+(1, 4),
+(2, 2),
+(3, 6),
+(4, 4);
+
+-- Adicionar Pedidos
+INSERT INTO Pedidos (id_cliente, id_mesa, data_pedido, total) VALUES
+(1, 1, '2024-09-01 19:00:00', 150.00),
+(2, 2, '2024-09-01 20:00:00', 80.00);
+
+-- Adicionar Itens_Pedido
+INSERT INTO Itens_Pedido (id_pedido, descricao_item, quantidade, preco_unitario) VALUES
+(1, 'Pizza Margherita', 1, 50.00),
+(1, 'Refrigerante', 2, 10.00),
+(2, 'Hambúrguer', 1, 30.00),
+(2, 'Batata Frita', 1, 20.00);
+
+-- 4. Consultar Dados
+
+-- Listar todos os clientes
+SELECT * FROM Clientes;
+
+-- Listar todas as mesas
+SELECT * FROM Mesas;
+
+-- Listar todos os pedidos
+SELECT * FROM Pedidos;
+
+-- Mostrar todos os itens de um pedido específico, incluindo o total do pedido
+SELECT I.id_item, I.descricao_item, I.quantidade, I.preco_unitario,
+       (I.quantidade * I.preco_unitario) AS subtotal,
+       P.total AS total_pedido
+FROM Itens_Pedido I
+JOIN Pedidos P ON I.id_pedido = P.id_pedido
+WHERE I.id_pedido = 1;
+
+-- 5. Atualizar Dados
+
+-- Atualizar informações de um cliente
+UPDATE Clientes
+SET telefone = '11999999999', email = 'joao.novoemail@example.com'
+WHERE id_cliente = 1;
+
+-- Atualizar informações de uma mesa
+UPDATE Mesas
+SET capacidade = 8
+WHERE id_mesa = 3;
+
+-- 6. Excluir Dados
+
+-- Excluir um pedido e todos os itens relacionados a ele
+DELETE FROM Pedidos
+WHERE id_pedido = 2;
+
+-- Excluir um cliente (os pedidos relacionados a ele não serão excluídos devido ao ON DELETE SET NULL)
+DELETE FROM Clientes
+WHERE id_cliente = 3;
