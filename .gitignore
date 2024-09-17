@@ -1,0 +1,20 @@
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore log files and databases
+*.log
+*.sql~
+
+# Ignore environment configuration
+.env
+
+# Ignore IDE and editor specific files
+.vscode/
+.idea/
+
+# Ignore SQL dump files
+*.sql
+
+# Ignore temporary files
+*.tmp
